@@ -1,0 +1,10 @@
+#WIP
+add configuration file 
+
+#completed
+check file size instead of filename to continue the action - 24112023
+add status visualization - 28112023
+add email on failure - 28112023
+
+
+

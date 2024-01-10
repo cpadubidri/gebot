@@ -1,0 +1,13 @@
+# Ignore folder
+__pycache__/
+key/
+doc/
+
+
+
+# Ignore compiled binaries
+
+
+# Ignore log files
+*.log
+

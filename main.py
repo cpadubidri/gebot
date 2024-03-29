@@ -1,51 +1,38 @@
-from gebot import ImageDownloader
+# from gebot import ImageDownloader
 import pandas as pd
-from statusIndicator import GEBotInfoDisplay
-import tkinter as tk
-import os
+import datetime
+import json
+import time
 
-if __name__=='__main__':
+def main(path, start=0,stop=None, config_path='./resources/config.json'):
+    with open(config_path) as file:
+        config = json.load(file)
+    emailIDs = config['emailID']
+    machineID = config['machineID']
 
-    # downloader = ImageDownloader()
-    data = pd.read_csv('./resources/grid_points_csv.csv')
 
-    start = 0
-    latitude = data['Lat'][start:20]
-    longitude = data['Long'][start:20]
-    img_id = data['id'][start:20]
+    data = pd.read_csv(path)
+    start = 0 if start==0 else start-1
 
+    latitude = data['Lat'][start:stop]
+    longitude = data['Long'][start:stop]
+    img_id = data['id'][start:stop]
+
+
+    print(f"{datetime.datetime.now().replace(microsecond=0)} Google Earth Bot initialized")
+    print(f"{datetime.datetime.now().replace(microsecond=0)} Bot id: {machineID}, and the notification email: {emailIDs}")
+    time.sleep(1)
+    print(f"{datetime.datetime.now().replace(microsecond=0)} Input data processed. Number of files in the batch is {len(img_id)}")
+    
+    
     downloader = ImageDownloader()
+    print(f"{datetime.datetime.now().replace(microsecond=0)} Download initilized")
     downloader.download_images(latitude, longitude, img_id=img_id, sleep_time=100, sleep_after=200)
 
+if __name__=='__main__':
+    ge_pts_path = './resources/grid_points_csv.csv'
 
-
-    # root = tk.Tk()
-    # gebot_display = GEBotInfoDisplay(root)
+    main(ge_pts_path, start=0, stop=None)
 
     
-    # # Update information using the update_info method
-    # status_dic = {"status":"Running", 
-    #               "speed": "15 MB/s", 
-    #               "expected_finish_time":"2 hours", 
-    #               "remaining_images":"50%", 
-    #               "images_downloaded":"100"}
-    # gebot_display.update_info(status_dic=status_dic)
-
-    # # root.mainloop()
-    # import time
-
-    # images_downloaded = 100
-    # for i in range (1,10):
-    #     images_downloaded = images_downloaded+1
-        
-    #     # Update information using the update_info method
-    #     status_dic = {"status":"Running", 
-    #                 "speed": "15 MB/s", 
-    #                 "expected_finish_time":"2 hours", 
-    #                 "remaining_images":"50%", 
-    #                 "images_downloaded":images_downloaded}
-    #     gebot_display.update_info(status_dic=status_dic)
-    #     root.update() 
-    #     time.sleep(2)
-    # root.mainloop()
 

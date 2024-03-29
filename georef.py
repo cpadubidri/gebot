@@ -380,7 +380,7 @@ if __name__ == "__main__":
         The 'start' and 'stop' parameters are helpful if we want to terminate the process in the middle and restart it later.
 
         Examples:
-            python ge.py --inputpath path/to/image_folder 
+            python georef.py --inputpath path/to/image_folder 
                              --outputpath path/to/save_folder 
                              --start 10 
                              --stop 20

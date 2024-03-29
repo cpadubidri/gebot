@@ -92,9 +92,9 @@ class SendEmail:
             print("{} Status email sent to {}".format(dt.datetime.now().replace(microsecond=0), eID))
 
         def __getattr__(self, attrib):
-        if attrib=="__version__":
-            return self.__version__
-        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{attrib}'")
+            if attrib=="__version__":
+                return self.__version__
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{attrib}'")
 
 
 

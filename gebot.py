@@ -1,12 +1,14 @@
 import pyautogui 
 import time 
-from os.path import exists, join, splitext, getsize 
+from os.path import exists, join, splitext, getsize
+from os import mkdir 
 import datetime  
 import pandas as pd  
 import json 
 import tkinter as tk
 from statusIndicator import GEBotInfoDisplay
 from notificationHandler import SendEmail 
+from tqdm import tqdm
 
 class ImageDownloader:
     ___version__='1.1'
@@ -325,6 +327,48 @@ class ImageDownloader:
                 "remaining_images": str(rm_img), 
                 "time_elapsed": f'{te[0]} days, {te[1]} hours, {te[2]} min'}
 
+    def get_dates(self,csv_path,savepath='./acqimg'):
+        import pyscreenshot as ImageGrab
+        data = pd.read_csv(csv_path)
+        latitude = data['Lat'][2990:]
+        longitude = data['Long'][2990:]
+        
+        
+        if not(exists(savepath)):
+            mkdir(savepath)
+
+        input("Move the mouse-pointer to search bar and press 'Enter'")
+        search_loc = pyautogui.position()
+        input("Move the mouse-pointer to timeline pointer and press 'Enter'")
+        time_loc = pyautogui.position()
+
+        # print(search_loc)
+        # print(time_loc)
+
+        # search_loc = (1186,128)
+        # time_loc = (1627,153)
+        for lat,lon in tqdm(zip(latitude, longitude), total=len(latitude)):
+            # print(lat, lon)
+            pyautogui.click(search_loc)
+            pyautogui.hotkey('ctrl', 'a')
+            time.sleep(.2)
+            pyautogui.typewrite(str(lat) + "," + str(lon))
+            pyautogui.typewrite(['enter'])
+            time.sleep(1)
+            pyautogui.click(time_loc)
+            # time.sleep(.2)
+            pyautogui.drag(30, 0, .5, button='left')
+
+            im=ImageGrab.grab(bbox=(time_loc[0]-50,time_loc[1]-20,time_loc[0]+10,time_loc[1]))
+            im.save(join(savepath,str(lat)+'_'+str(lon)+'.jpg'))
+
+
+            # break
+
+
+
+
+
     @staticmethod
     def __sec2dhm__(duration_seconds):
         """
@@ -346,7 +390,7 @@ class ImageDownloader:
         minutes = (duration_seconds % 3600) // 60
         return days, hours, minutes
     
-
+    
     def __version__(self):
         return self._version_
     
@@ -359,5 +403,6 @@ if __name__ == '__main__':
     longitude = data['Long'][start:]
     img_id = data['id'][start:]
 
-    downloader = ImageDownloader(save_path=SAVE_PATH)
-    downloader.download_images(latitude, longitude, img_id=img_id, sleep_time=100, sleep_after=200)
+    downloader = ImageDownloader()
+    # downloader.download_images(latitude, longitude, img_id=img_id, sleep_time=100, sleep_after=200)
+    downloader.get_dates('./resources/grid_points_csv.csv')

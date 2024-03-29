@@ -252,7 +252,7 @@ class ImageDownloader:
 
             time.sleep(2)
             self.counter += 1
-            self.update_status()
+            self.__update_status__()
 
             if self.counter % sleep_after == 0:
                 print("{} Sleeping".format(datetime.datetime.now().replace(microsecond=0)))

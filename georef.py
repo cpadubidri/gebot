@@ -2,12 +2,7 @@ import math
 import numpy as np
 import cv2
 import rasterio
-from rasterio.warp import reproject
-from rasterio.enums import Resampling
 import os
-import sys
-from tifffile import imread
-from PIL import Image
 import argparse
 from tqdm import tqdm
 
@@ -392,3 +387,4 @@ if __name__ == "__main__":
     
 
 
+# python georef.py -i /home/savvas/SUPER-NAS/USERS/Chirag/PERIOPSIS/202405-Greece/Data/Larissa/Captures

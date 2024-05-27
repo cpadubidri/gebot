@@ -5,6 +5,7 @@ import rasterio
 import os
 import argparse
 from tqdm import tqdm
+from osgeo import gdal
 
 
 class Geotagger:
@@ -303,13 +304,19 @@ class Geotagger:
                                count=img.shape[0]) as dst:
                 dst.write(img.astype(rasterio.uint8))
     
+    def genVRT(self,input_path, output_path):
+        print(f'Generating VRT file {output_path}')
+        tif_files = [os.path.join(input_path, f) for f in os.listdir(input_path) if f.endswith('.tif')]
+        gdal.BuildVRT(output_path, tif_files)
+
+    
 
     def __getattr__(self, attrib):
         if attrib=="__version__":
             return self.__version__
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{attrib}'")
 
-def main(imagePath, saveFolder=None, start=None, stop=None):
+def main(imagePath, vrt=False, saveFolder=None, start=None, stop=None):
     """
     
     """
@@ -343,6 +350,13 @@ def main(imagePath, saveFolder=None, start=None, stop=None):
         )
         geotagger.geotag()
         length -= 1
+    
+    #generate virtual meged vrt file
+    if vrt:
+        folder_split = save_path.split('/')
+        id1 = folder_split[-2]
+        id2 = folder_split[-1].split('_')[0]
+        geotagger.genVRT(input_path=save_path, output_path=os.path.join(parent_folder_path,f'{id1}_{id2}_output.vrt'))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process command line arguments")
@@ -350,6 +364,7 @@ if __name__ == "__main__":
     parser.add_argument("--end","-e", type=int, help="Stop value")
     parser.add_argument("--outputpath","-o", help="Save folder path")
     parser.add_argument("--inputpath","-i", help="Image path", required=True)
+    parser.add_argument("--vrt","-v", help="Merges files if True", default=False)
     
     args = parser.parse_args() 
 
@@ -367,6 +382,8 @@ if __name__ == "__main__":
             inputpath (str/path)    : Path to the image folder.
             outputpath (str/path)   : Path of the folder where the georeferenced images should be saved. 
                                       If set to 'None', a new folder will be created in the imagePath with '_GEOTAGGED' appended to the path.
+            vrt (bool)              : Flag to generate virtual merged file.
+                                      if True, a virual merged, vrt file will be generated in root directory. 
             start (int)             : The starting number for the filenames of the images in the folder for georeferencing. 
                                       If set to 'None', the function will start from the beginning (start=0).
             stop (int)              : The ending number for the filenames of the images in the folder for georeferencing. 
@@ -381,10 +398,11 @@ if __name__ == "__main__":
                              --stop 20
     """
     
-    main(imagePath=args.inputpath, saveFolder=savefolder, start=start, stop=stop)
+    main(imagePath=args.inputpath, vrt=args.vrt, saveFolder=savefolder, start=start, stop=stop)
 
 
     
 
 
-# python georef.py -i /home/savvas/SUPER-NAS/USERS/Chirag/PERIOPSIS/202405-Greece/Data/Larissa/Captures
+# python georef.py -i /home/savvas/SUPER-NAS/USERS/Chirag/PERIOPSIS/202405-Greece/Data/Larissa/larissa/sample -v True
+

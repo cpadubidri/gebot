@@ -356,7 +356,7 @@ def main(imagePath, vrt=False, saveFolder=None, start=None, stop=None):
         folder_split = save_path.split('/')
         id1 = folder_split[-2]
         id2 = folder_split[-1].split('_')[0]
-        geotagger.genVRT(input_path=save_path, output_path=os.path.join(parent_folder_path,f'{id1}_{id2}_output.vrt'))
+        geotagger.genVRT(input_path=save_path, output_path=os.path.abspath(os.path.join(save_path, os.pardir,f'{id1}_{id2}_output.vrt')))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process command line arguments")
